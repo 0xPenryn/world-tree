@@ -143,15 +143,18 @@ fn apply_updates_to_tree<S: GenericStorage<Hash>>(
     tree: &mut CascadingMerkleTree<PoseidonHash, S>,
     updates: &[(u64, Hash)],
 ) -> WorldTreeResult<()> {
+    let mut update_queue = Vec::<Hash>::new();
+
     for (leaf_idx, leaf) in updates {
         let leaf_idx = *leaf_idx as usize;
 
-        match leaf_idx.cmp(&tree.num_leaves()) {
+        match leaf_idx.cmp(&(tree.num_leaves() + &update_queue.len())) {
             Ordering::Less => {
+                tree.extend_from_slice(&update_queue as &[Hash]);
                 tree.set_leaf(leaf_idx, *leaf);
             }
             Ordering::Equal => {
-                tree.push(*leaf)?;
+                update_queue.push(*leaf);
             }
             Ordering::Greater => {
                 return Err(
@@ -160,6 +163,8 @@ fn apply_updates_to_tree<S: GenericStorage<Hash>>(
             }
         }
     }
+
+    tree.extend_from_slice(&update_queue as &[Hash]);
 
     Ok(())
 }
