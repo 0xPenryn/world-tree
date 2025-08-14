@@ -151,6 +151,7 @@ fn apply_updates_to_tree<S: GenericStorage<Hash>>(
         match leaf_idx.cmp(&(tree.num_leaves() + &update_queue.len())) {
             Ordering::Less => {
                 tree.extend_from_slice(&update_queue as &[Hash]);
+                update_queue.clear();
                 tree.set_leaf(leaf_idx, *leaf);
             }
             Ordering::Equal => {
@@ -165,6 +166,7 @@ fn apply_updates_to_tree<S: GenericStorage<Hash>>(
     }
 
     tree.extend_from_slice(&update_queue as &[Hash]);
+    update_queue.clear();
 
     Ok(())
 }
