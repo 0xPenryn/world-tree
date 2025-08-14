@@ -24,6 +24,7 @@ use semaphore::poseidon_tree::PoseidonHash;
 use tracing::info;
 
 use self::error::WorldTreeResult;
+use self::error::IdentityTreeError;
 use self::inclusion_proof::InclusionProof;
 pub use self::newtypes::{ChainId, LeafIndex, NodeIndex};
 use crate::db::{Db, DbMethods};
@@ -153,6 +154,10 @@ impl WorldTree {
 
         if leaf_idx as usize >= tree_lock.num_leaves() {
             return Ok(None);
+        }
+
+        if tree_lock.get_leaf(leaf_idx as usize) == Hash::ZERO {
+            return Err(IdentityTreeError::LeafNotFound.into());
         }
 
         let proof = tree_lock.proof(leaf_idx as usize);
