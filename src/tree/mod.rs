@@ -157,7 +157,7 @@ impl WorldTree {
         }
 
         if tree_lock.get_leaf(leaf_idx as usize) == Hash::ZERO {
-            return Err(IdentityTreeError::LeafNotFound.into());
+            return Err(IdentityTreeError::InvalidLeaf.into());
         }
 
         let proof = tree_lock.proof(leaf_idx as usize);

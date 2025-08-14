@@ -34,6 +34,8 @@ pub enum IdentityTreeError {
     LeafAlreadyExists,
     #[error("Leaf does not exist in tree")]
     LeafNotFound,
+    #[error("Leaf is invalid")]
+    InvalidLeaf,
 }
 
 impl Status for IdentityTreeError {
@@ -41,6 +43,7 @@ impl Status for IdentityTreeError {
         match self {
             IdentityTreeError::RootNotFound
             | IdentityTreeError::LeafNotFound => StatusCode::NOT_FOUND,
+            IdentityTreeError::InvalidLeaf => StatusCode::BAD_REQUEST,
             _ => StatusCode::INTERNAL_SERVER_ERROR,
         }
     }
