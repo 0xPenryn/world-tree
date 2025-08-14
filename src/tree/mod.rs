@@ -84,7 +84,7 @@ impl WorldTree {
                 if let Err(e) = cache.canonical.blocking_read().validate() {
                     tracing::error!("Tree validation failed: {e:?}");
                     tracing::info!("Deleting cache and exiting");
-                    std::fs::remove_file(cache_dir).unwrap();
+                    std::fs::remove_file(cache_dir.join("canonical.cache")).unwrap();
                     process::exit(1);
                 }
                 let elapsed = start.elapsed();
@@ -109,7 +109,7 @@ impl WorldTree {
                 {
                     tracing::error!("Tree validation failed: {e:?}");
                     tracing::info!("Deleting cache and exiting");
-                    std::fs::remove_file(cache_dir).unwrap();
+                    std::fs::remove_file(cache_dir.join(format!("{}.cache", &chain_id))).unwrap();
                     process::exit(1);
                 }
 
