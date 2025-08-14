@@ -11,7 +11,6 @@ use tokio::task::JoinHandle;
 
 use super::error::WorldTreeResult;
 use super::{ChainId, Hash, InclusionProof, WorldTree};
-use crate::db::DbMethods;
 
 /// Service that keeps the World Tree synced with `WorldIDIdentityManager` and exposes an API endpoint to serve inclusion proofs for a given World ID.
 
@@ -143,16 +142,8 @@ struct HealthResponse {
     pub canonical_root: Hash,
 }
 
-#[tracing::instrument(skip(world_tree))]
+#[tracing::instrument(level = "debug")]
 #[allow(clippy::complexity)]
-pub async fn health(
-    State(world_tree): State<Arc<WorldTree>>,
-) -> WorldTreeResult<Json<HealthResponse>> {
-    let canonical_root = world_tree.db.as_ref().root_by_chain(world_tree.canonical_chain_id.0).await?;
-
-    let response = HealthResponse {
-        canonical_root: canonical_root.unwrap_or_default(),
-    };
-
-    Ok(Json(response))
+pub async fn health() -> WorldTreeResult<Json<()>> {
+    Ok(Json(()))
 }
